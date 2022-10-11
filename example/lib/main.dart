@@ -6,6 +6,7 @@ import 'dart:typed_data' as typed_data;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as im;
 import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'const/resource.dart';
@@ -44,14 +45,15 @@ class _MyAppState extends State<MyApp> {
     return Directory.systemTemp;
   }
 
+  String? filesize;
   void _testCompressFile() async {
-    final img = AssetImage('img/img.jpg');
+    final img = AssetImage('img/bbb.webp');
     print('pre compress');
     final config = ImageConfiguration();
     final AssetBundleImageKey key = await img.obtainKey(config);
     final ByteData data = await key.bundle.load(key.name);
     final dir = await path_provider.getTemporaryDirectory();
-    final File file = createFile('${dir.absolute.path}/test.png');
+    final File file = createFile('${dir.absolute.path}/bbb.webp');
     file.writeAsBytesSync(data.buffer.asUint8List());
 
     final result = await testCompressFile(file);
@@ -59,6 +61,17 @@ class _MyAppState extends State<MyApp> {
 
     safeSetState(() {
       provider = MemoryImage(result);
+
+      print("object${result?.length}");
+      int size = result!.length;
+      double value = size / 1024;
+
+      if (value > 1024) {
+        value = value / 1024;
+        filesize = '${value.toStringAsFixed(1)}mb';
+      } else {
+        filesize = '${value.toStringAsFixed(1)}kb';
+      }
     });
   }
 
@@ -102,14 +115,38 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+// 获取图片内存大小
+  static Future<String> getSize(File? file) async {
+    if (file == null) {
+      return '';
+    }
+    final int size = await file!.length();
+    final img = im.decodeImage(file.readAsBytesSync());
+    int filelenthbytes = file.readAsBytesSync().lengthInBytes;
+
+    double value = size / 1024;
+
+    if (value > 1024) {
+      value = value / 1024;
+      return '${value.toStringAsFixed(1)}mb';
+    } else {
+      return '${value.toStringAsFixed(1)}kb';
+    }
+  }
+
   Future<typed_data.Uint8List?> testCompressFile(File file) async {
     print('testCompressFile');
+    final path = file.absolute.path.split(".")[1];
+
+    final myFileSize = file!.lengthSync() / 1024;
+    final targetQuality = (10 / myFileSize) * 100;
+    int qualityvalue = targetQuality.toInt();
+
     final result = await FlutterImageCompress.compressWithFile(
       file.absolute.path,
-      minWidth: 2300,
-      minHeight: 1500,
-      quality: 94,
-      rotate: 180,
+      quality: qualityvalue,
+      compressSize: 10,
+      format: CompressFormat.jpeg,
     );
     print(file.lengthSync());
     print(result?.length);
@@ -154,7 +191,8 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<typed_data.Uint8List> testComporessList(typed_data.Uint8List list) async {
+  Future<typed_data.Uint8List> testComporessList(
+      typed_data.Uint8List list) async {
     final result = await FlutterImageCompress.compressWithList(
       list,
       minHeight: 1080,
@@ -287,18 +325,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _compressFromWebPImage() async {
-    // Converting webp to jpeg
-    final result = await FlutterImageCompress.compressAssetImage(
-      R.IMG_ICON_WEBP,
-    );
-    if (result == null) return;
-    // Show result image
-    safeSetState(() {
-      provider = MemoryImage(typed_data.Uint8List.fromList(result));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -316,6 +342,12 @@ class _MyAppState extends State<MyApp> {
                     fit: BoxFit.contain,
                   ),
                 ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.teal,
+                child: Text("大小:${filesize}"),
               ),
             ),
             SliverToBoxAdapter(
@@ -382,12 +414,6 @@ class _MyAppState extends State<MyApp> {
               child: TextButton(
                 child: Text('Convert to webp format, Just support android'),
                 onPressed: _compressAndroidWebpExample,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: TextButton(
-                child: Text('Convert from webp format'),
-                onPressed: _compressFromWebPImage,
               ),
             ),
           ],

@@ -20,11 +20,11 @@
     int quality = [args[3] intValue];
     int rotate = [args[4] intValue];
     int formatType = [args[6] intValue];
-
+    int compressSize = [args[8] intValue];
     BOOL keepExif = [args[7] boolValue];
 
     NSData *data = [list data];
-    NSData *compressedData = [CompressHandler compressWithData:data minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:formatType];
+    NSData *compressedData = [CompressHandler compressWithData:data minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:formatType compressSize:compressSize];
     
     if (compressedData == nil) {
         result(nil);

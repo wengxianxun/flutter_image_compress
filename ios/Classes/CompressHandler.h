@@ -7,11 +7,11 @@
 
 @interface CompressHandler : NSObject
 + (NSData *)compressWithData:(NSData *)data minWidth:(int)minWidth minHeight:(int)minHeight quality:(int)quality
-                      rotate:(int)rotate format:(int)format;
+                      rotate:(int)rotate format:(int)format compressSize:(int)compressSize;
 
-+ (NSData *)compressWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight quality:(int)quality
-                         rotate:(int)rotate format:(int)format;
++ (NSData *)compressWithUIImage:(UIImage *)image quality:(int)quality
+                          format:(int)format compressSize:(int)compressSize;
 
 + (NSData *)compressDataWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight
-                            quality:(int)quality rotate:(int)rotate format:(int)format;
+                            quality:(int)quality rotate:(int)rotate format:(int)format compressSize:(int)compressSize;
 @end

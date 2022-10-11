@@ -13,7 +13,7 @@ dependencies:
 
   flutter_image_compress:
     path: ../
-
+  image: ^3.2.0
   path_provider: ^2.0.0
 
 flutter:

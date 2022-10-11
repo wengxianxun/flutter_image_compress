@@ -49,6 +49,7 @@ class FlutterImageCompress {
     int minHeight = 1080,
     int quality = 95,
     int rotate = 0,
+    int compressSize = 0,
     int inSampleSize = 1,
     bool autoCorrectionAngle = true,
     CompressFormat format = CompressFormat.jpeg,
@@ -71,6 +72,7 @@ class FlutterImageCompress {
       _convertTypeToInt(format),
       keepExif,
       inSampleSize,
+      compressSize,
     ]);
     return result;
   }
@@ -78,11 +80,12 @@ class FlutterImageCompress {
   /// Compress file of [path] to [Uint8List].
   static Future<typed_data.Uint8List?> compressWithFile(
     String path, {
-    int minWidth = 1920,
-    int minHeight = 1080,
-    int inSampleSize = 1,
+    // int minWidth = 1920,
+    // int minHeight = 1080,
+    // int inSampleSize = 1,
     int quality = 95,
-    int rotate = 0,
+    // int rotate = 0,
+    int compressSize = 0,
     bool autoCorrectionAngle = true,
     CompressFormat format = CompressFormat.jpeg,
     bool keepExif = false,
@@ -100,15 +103,16 @@ class FlutterImageCompress {
     }
     final result = await _channel.invokeMethod('compressWithFile', [
       path,
-      minWidth,
-      minHeight,
+      // minWidth,
+      // minHeight,
       quality,
-      rotate,
-      autoCorrectionAngle,
+      compressSize,
       _convertTypeToInt(format),
       keepExif,
-      inSampleSize,
-      numberOfRetries
+      // rotate,
+      autoCorrectionAngle,
+      // inSampleSize,
+      numberOfRetries,
     ]);
     return result;
   }
@@ -122,6 +126,7 @@ class FlutterImageCompress {
     int inSampleSize = 1,
     int quality = 95,
     int rotate = 0,
+    int compressSize = 0,
     bool autoCorrectionAngle = true,
     CompressFormat format = CompressFormat.jpeg,
     bool keepExif = false,
@@ -155,6 +160,7 @@ class FlutterImageCompress {
         keepExif,
         inSampleSize,
         numberOfRetries,
+        compressSize,
       ],
     );
     if (result == null) {
@@ -170,6 +176,7 @@ class FlutterImageCompress {
     int minHeight = 1080,
     int quality = 95,
     int rotate = 0,
+    int compressSize = 0,
     bool autoCorrectionAngle = true,
     CompressFormat format = CompressFormat.jpeg,
     bool keepExif = false,
@@ -195,6 +202,7 @@ class FlutterImageCompress {
       autoCorrectionAngle: autoCorrectionAngle,
       format: format,
       keepExif: keepExif,
+      compressSize: compressSize,
     );
   }
 }

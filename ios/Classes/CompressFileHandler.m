@@ -15,13 +15,13 @@
 
     NSArray *args = call.arguments;
     NSString *path = args[0];
-    int minWidth = [args[1] intValue];
-    int minHeight = [args[2] intValue];
-    int quality = [args[3] intValue];
-    int rotate = [args[4] intValue];
-
-    int formatType = [args[6] intValue];
-    BOOL keepExif = [args[7] boolValue];
+//    int minWidth = [args[1] intValue];
+//    int minHeight = [args[2] intValue];
+    int quality = [args[1] intValue];
+//    int rotate = [args[4] intValue];
+    int compressSize = [args[2] intValue];
+    int formatType = [args[3] intValue];
+    BOOL keepExif = [args[4] boolValue];
 
     
     UIImage *img;
@@ -43,7 +43,7 @@
     }
 
 
-    NSData *data = [CompressHandler compressWithUIImage:img minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:formatType];
+    NSData *data = [CompressHandler compressWithUIImage:img quality:quality format:formatType compressSize:compressSize];
 
     if (keepExif) {
         SYMetadata *metadata = [SYMetadata metadataWithFileURL:[NSURL fileURLWithPath:path]];
@@ -65,7 +65,7 @@
 
     int formatType = [args[7] intValue];
     BOOL keepExif = [args[8] boolValue];
-
+    int compressSize = [args[9] intValue];
     
     UIImage *img;
     
@@ -85,7 +85,7 @@
         img = [UIImage imageWithData:nsdata];
     }
     
-    NSData *data = [CompressHandler compressDataWithUIImage:img minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:formatType];
+    NSData *data = [CompressHandler compressDataWithUIImage:img minWidth:minWidth minHeight:minHeight quality:quality rotate:rotate format:formatType compressSize:compressSize];
 
     if (keepExif) {
         SYMetadata *metadata = [SYMetadata metadataWithFileURL:[NSURL fileURLWithPath:path]];
