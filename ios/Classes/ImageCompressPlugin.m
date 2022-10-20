@@ -25,6 +25,10 @@ static dispatch_queue_t serial_queue;
         } else if ([@"compressWithFile" isEqualToString:call.method]) {
             CompressFileHandler *handler = [[CompressFileHandler alloc] init];
             [handler handleMethodCall:call result:result];
+        } else if ([@"compressSizeWithFile" isEqualToString:call.method]){
+            //压缩图片size
+            CompressFileHandler *handler = [[CompressFileHandler alloc] init];
+            [handler handleSizeMethodCall:call result:result];
         } else if ([@"compressWithFileAndGetFile" isEqualToString:call.method]) {
             CompressFileHandler *handler = [[CompressFileHandler alloc] init];
             [handler handleCompressFileToFile:call result:result];

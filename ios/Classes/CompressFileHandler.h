@@ -8,5 +8,7 @@
 @interface CompressFileHandler : NSObject
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
 
+- (void)handleSizeMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
+
 - (void)handleCompressFileToFile:(FlutterMethodCall *)call result:(FlutterResult)result;
 @end

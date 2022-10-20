@@ -11,6 +11,46 @@
 @implementation CompressFileHandler {
 
 }
+
+- (void)handleSizeMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result{
+    NSArray *args = call.arguments;
+    NSString *path = args[0];
+    int minWidth = [args[1] intValue];
+    int minHeight = [args[2] intValue];
+    int formatType = [args[3] intValue];
+    BOOL keepExif = [args[4] boolValue];
+
+    
+    UIImage *img;
+    
+    NSURL *imageUrl = [NSURL fileURLWithPath:path];
+    NSData *nsdata = [NSData dataWithContentsOfURL:imageUrl];
+    
+    NSString *imageType = [self mimeTypeByGuessingFromData:nsdata];
+    
+    //  NSLog(@" nsdata length: %@", imageType);
+    
+    SDImageWebPCoder *webPCoder = [SDImageWebPCoder sharedCoder];
+    [[SDImageCodersManager sharedManager] addCoder:webPCoder];
+    
+    if([imageType  isEqual: @"image/webp"]) {
+    img = [[SDImageWebPCoder sharedCoder] decodedImageWithData:nsdata options:nil];
+    } else {
+        img = [UIImage imageWithData:nsdata];
+    }
+
+
+    NSData *data = [CompressHandler compressSizeWithUIImage:img minWidth:minWidth minHeight:minHeight format:formatType];
+
+    if (keepExif) {
+        SYMetadata *metadata = [SYMetadata metadataWithFileURL:[NSURL fileURLWithPath:path]];
+        metadata.orientation = @0;
+        data = [SYMetadata dataWithImageData:data andMetadata:metadata];
+    }
+
+    result([FlutterStandardTypedData typedDataWithBytes:data]);
+}
+
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
 
     NSArray *args = call.arguments;

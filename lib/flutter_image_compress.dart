@@ -77,12 +77,46 @@ class FlutterImageCompress {
     return result;
   }
 
+  static Future<typed_data.Uint8List?> compressSizeWithFile(
+    String path, {
+    int minWidth = 1920,
+    int minHeight = 1080,
+    int inSampleSize = 1,
+    bool autoCorrectionAngle = true,
+    CompressFormat format = CompressFormat.jpeg,
+    bool keepExif = false,
+    int numberOfRetries = 5,
+  }) async {
+    if (numberOfRetries <= 0) {
+      throw CompressError("numberOfRetries can't be null or less than 0");
+    }
+    if (!File(path).existsSync()) {
+      throw CompressError('Image file does not exist in $path.');
+    }
+    final support = await _validator.checkSupportPlatform(format);
+    if (!support) {
+      return null;
+    }
+    final result = await _channel.invokeMethod('compressSizeWithFile', [
+      path,
+      minWidth,
+      minHeight,
+      _convertTypeToInt(format),
+      keepExif,
+      // rotate,
+      autoCorrectionAngle,
+      numberOfRetries,
+      inSampleSize,
+    ]);
+    return result;
+  }
+
   /// Compress file of [path] to [Uint8List].
   static Future<typed_data.Uint8List?> compressWithFile(
     String path, {
     // int minWidth = 1920,
     // int minHeight = 1080,
-    // int inSampleSize = 1,
+    int inSampleSize = 1,
     int quality = 95,
     // int rotate = 0,
     int compressSize = 0,
@@ -111,8 +145,8 @@ class FlutterImageCompress {
       keepExif,
       // rotate,
       autoCorrectionAngle,
-      // inSampleSize,
       numberOfRetries,
+      inSampleSize,
     ]);
     return result;
   }

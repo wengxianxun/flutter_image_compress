@@ -6,6 +6,9 @@
 
 
 @interface CompressHandler : NSObject
+
++ (NSData *)compressSizeWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight format:(int)format;
+
 + (NSData *)compressWithData:(NSData *)data minWidth:(int)minWidth minHeight:(int)minHeight quality:(int)quality
                       rotate:(int)rotate format:(int)format compressSize:(int)compressSize;
 

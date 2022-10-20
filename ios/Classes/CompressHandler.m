@@ -7,10 +7,99 @@
 #import "UIImage+WebP.h"
 #import "ImageCompressPlugin.h"
 #import <SDWebImageWebPCoder/SDImageWebPCoder.h>
-
+#import <MobileCoreServices/UTCoreTypes.h>
 @implementation CompressHandler {
 
 }
+
+
+
++ (NSData *)compressSizeWithUIImage:(UIImage *)image minWidth:(int)minWidth minHeight:(int)minHeight format:(int)format{
+    if([ImageCompressPlugin showLog]){
+        NSLog(@"width = %.0f",[image size].width);
+        NSLog(@"height = %.0f",[image size].height);
+        
+        
+    }
+    image = [image scaleWithMinWidth:minWidth minHeight:minHeight];
+    
+    NSData *resultData = [CompressHandler rawData2:image format:format];
+//    UIImageJPEGRepresentation
+
+    return resultData;
+}
+
+
+
+
+/**
+ 使用imageIO中的api生成data
+ kUTTypeImage
+ kUTTypeJPEG
+ kUTTypeJPEG2000
+ kUTTypeTIFF
+ kUTTypePICT
+ kUTTypeGIF
+ kUTTypePNG
+ kUTTypeQuickTimeImage
+ kUTTypeAppleICNS
+ kUTTypeBMP
+ kUTTypeICO
+ kUTTypeRawImage
+ kUTTypeScalableVectorGraphics
+ kUTTypeLivePhoto
+ */
++ (NSData *)rawData2:(UIImage *)image format:(int)format{
+    NSDictionary *options = @{(__bridge NSString *)kCGImageSourceShouldCache : @NO,
+                              (__bridge NSString *)kCGImageSourceShouldCacheImmediately : @NO
+                              };
+    NSMutableData *data = [NSMutableData data];
+    CGImageDestinationRef destRef = NULL;
+    
+    if(format == 2){
+        destRef = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypeImage, 1, (__bridge CFDictionaryRef)options);
+        CGImageDestinationAddImage(destRef, image.CGImage, (__bridge CFDictionaryRef)options);
+        CGImageDestinationFinalize(destRef);
+        CFRelease(destRef);
+    }else if(format == 0){
+        destRef = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypeJPEG, 1, (__bridge CFDictionaryRef)options);
+        CGImageDestinationAddImage(destRef, image.CGImage, (__bridge CFDictionaryRef)options);
+        CGImageDestinationFinalize(destRef);
+        CFRelease(destRef);
+    }else if(format == 1){
+        destRef = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypePNG, 1, (__bridge CFDictionaryRef)options);
+        CGImageDestinationAddImage(destRef, image.CGImage, (__bridge CFDictionaryRef)options);
+        CGImageDestinationFinalize(destRef);
+        CFRelease(destRef);
+    }else if(format == 3){
+        CIImage *ciImage = [CIImage imageWithCGImage:image.CGImage];
+        CIContext *ciContext = [[CIContext alloc]initWithOptions:nil];
+        NSString *tmpDir = NSTemporaryDirectory();
+        double time = [[NSDate alloc]init].timeIntervalSince1970;
+        NSString *target = [NSString stringWithFormat:@"%@%.0f.heic",tmpDir, time * 1000];
+        NSURL *url = [NSURL fileURLWithPath:target];
+        
+        NSMutableDictionary *options = [NSMutableDictionary new];
+//        NSString *qualityKey = (__bridge NSString *)kCGImageDestinationLossyCompressionQuality;
+////        CIImageRepresentationOption
+//        [options setObject:@(quality / 100) forKey: qualityKey];
+        
+        if (@available(iOS 11.0, *)) {
+            [ciContext writeHEIFRepresentationOfImage:ciImage toURL:url format: kCIFormatARGB8 colorSpace: ciImage.colorSpace options:options error:nil];
+            data = [NSData dataWithContentsOfURL:url];
+        } else {
+            // Fallback on earlier versions
+            data = nil;
+        }
+    }
+    
+    
+    
+    
+    return data;
+}
+
+
 
 + (NSData *)compressWithData:(NSData *)data quality:(int)quality
                        format:(int)format  compressSize:(int)compressSize{

@@ -17,43 +17,44 @@ class CompressFileHandler(private val call: MethodCall, result: MethodChannel.Re
             @Suppress("UNCHECKED_CAST")
             val args: List<Any> = call.arguments as List<Any>
             val filePath = args[0] as String
-            var minWidth = args[1] as Int
-            var minHeight = args[2] as Int
-            val quality = args[3] as Int
-            val rotate = args[4] as Int
+//            var minWidth = args[1] as Int
+//            var minHeight = args[2] as Int
+            val quality = args[1] as Int
+            val compressSize = args[2] as Int;
+            val format = args[3] as Int
+            val keepExif = args[4] as Boolean
+//            val rotate = args[4] as Int
             val autoCorrectionAngle = args[5] as Boolean
-            val format = args[6] as Int
-            val keepExif = args[7] as Boolean
-            val inSampleSize = args[8] as Int
-            val numberOfRetries = args[9] as Int
+            val numberOfRetries = args[6] as Int
+            val inSampleSize = args[7] as Int
             val formatHandler = FormatRegister.findFormat(format)
             if (formatHandler == null) {
                 log("No support format.")
                 reply(null)
                 return@execute
             }
-            val exifRotate = if (autoCorrectionAngle) {
-                val bytes = File(filePath).readBytes()
-                Exif.getRotationDegrees(bytes)
-            } else {
-                0
-            }
-            if (exifRotate == 270 || exifRotate == 90) {
-                val tmp = minWidth
-                minWidth = minHeight
-                minHeight = tmp
-            }
-            val targetRotate = rotate + exifRotate
+//            val exifRotate = if (autoCorrectionAngle) {
+//                val bytes = File(filePath).readBytes()
+//                Exif.getRotationDegrees(bytes)
+//            } else {
+//                0
+//            }
+//            if (exifRotate == 270 || exifRotate == 90) {
+//                val tmp = minWidth
+//                minWidth = minHeight
+//                minHeight = tmp
+//            }
+//            val targetRotate = rotate + exifRotate
             val outputStream = ByteArrayOutputStream()
             try {
                 formatHandler.handleFile(
                     context,
                     filePath,
                     outputStream,
-                    minWidth,
-                    minHeight,
+//                    minWidth,
+//                    minHeight,
                     quality,
-                    targetRotate,
+//                    targetRotate,
                     keepExif,
                     inSampleSize,
                     numberOfRetries
